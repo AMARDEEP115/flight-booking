@@ -5,21 +5,7 @@ const { userModel } = require("../model/user.model");
 
 const apiRouter=Router();
 
-apiRouter.get("/dashboard",async(req,res)=>{
-    let data=await bookingModel.find();
-    res.status(200).send({"bookings":data});
-});
-
-apiRouter.get("/flights",async(req,res)=>{
-    let data=await flightModel.find();
-    res.status(200).send({"flights":data});
-});
-
-apiRouter.get("/flights/:id",async(req,res)=>{
-    let Id=req.params.id;
-    const data = await flightModel.findOne({ _id: Id });
-    res.status(200).send(data);
-});
+// ------------------------------     Register and Login
 
 apiRouter.post("/register",async(req,res)=>{
     let data = req.body;
@@ -36,20 +22,26 @@ apiRouter.post("/login",async(req,res)=>{
     } else {
         res.send("User Not Found");
     }
-})
-
-apiRouter.post("/booking",async(req,res)=>{
-    let data = req.body;
-    let sav= new bookingModel(data);
-    await sav.save();
-    res.status(201).send("Booking Done");
 });
+
+// -------------------------------    Flights Route
 
 apiRouter.post("/flights",async(req,res)=>{
     let data = req.body;
     let sav=new flightModel(data);
     await sav.save();
     res.status(201).send("Booking Done");
+});
+
+apiRouter.get("/flights",async(req,res)=>{
+    let data=await flightModel.find();
+    res.status(200).send({"flights":data});
+});
+
+apiRouter.get("/flights/:id",async(req,res)=>{
+    let Id=req.params.id;
+    const data = await flightModel.findOne({ _id: Id });
+    res.status(200).send(data);
 });
 
 apiRouter.patch("/flights/:id",async(req,res)=>{
@@ -61,9 +53,32 @@ apiRouter.patch("/flights/:id",async(req,res)=>{
 
 apiRouter.delete("/flights/:id",async(req,res)=>{
     let Id=req.params.id;
-    let data=req.body;
     await flightModel.findOneAndDelete({_id:Id});
     res.status(202).send("flight deleted");
+});
+
+// ------------------------------       Booking
+
+apiRouter.post("/booking",async(req,res)=>{
+    let data = req.body;
+    let Id=data.user;
+    let us=await userModel.findOne({ _id: Id });
+    let fId=data.flight;
+    let fl=await flightModel.findOne({ _id: fId });
+    let book={
+        user: {name:us.name,email:us.email},
+        flight: {airline:fl.airline,flightNo:fl.flightNo,price:fl.price}
+    }
+    let sav= new bookingModel(book);
+    await sav.save();
+    res.status(201).send("Booking Done");
+});
+
+// -------------------------------      Dashboard
+
+apiRouter.get("/dashboard",async(req,res)=>{
+    let data=await bookingModel.find();
+    res.status(200).send({"bookings":data});
 });
 
 module.exports={apiRouter};
