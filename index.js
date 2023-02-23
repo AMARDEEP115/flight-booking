@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(cors({"origin": "*"}));
 
 app.get("/",(req,res)=>{
-    res.send("Home");
+    res.send({"message":"This is home page","To register or login":"/api/register or /api/login","to add or find or update a flight":"/flights or /flights/:id","to book a flight":"/api/booking","to get list of all booked flights":"/api/dashboard"});
 });
 
 app.use("/api",apiRouter);
